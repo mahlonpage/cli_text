@@ -40,7 +40,7 @@ def add_alias(name, number):
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser() 
 	
-	parser.add_argument("recipient", nargs="?", help="Alias to send")
+	parser.add_argument("recipient", nargs="?", help="Alias to send text")
 	parser.add_argument("--alias", nargs=2, metavar=('name', 'number'), help="Alias k-v pair to add")
 	parser.add_argument("message", nargs=argparse.REMAINDER)
 
