@@ -31,17 +31,22 @@ def parse_aliases():
 		}
 
 def add_alias(name, number):
-	with open(ALIAS_FILE, 'a+') as af:
-		af.write(f"{name.lower()}|{number}\n")
+	active = parse_aliases()
+	alias = name.lower().strip()
+	active[alias] = number
 
-	print(f"Added alias: {name}|{number}!")
+	with open(ALIAS_FILE, 'w+') as af:
+		for k, v in sorted(active.items()):
+			af.write(f"{k}|{v}\n")
 
+	print(f"Added alias: {alias}|{number}!")
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser() 
 	
 	parser.add_argument("recipient", nargs="?", help="Alias to send text")
 	parser.add_argument("--alias", nargs=2, metavar=('name', 'number'), help="Alias k-v pair to add")
+	parser.add_argument("--list", action="store_true", help="List all aliases")
 	parser.add_argument("message", nargs=argparse.REMAINDER)
 
 	args = parser.parse_args()
@@ -49,6 +54,11 @@ if __name__ == "__main__":
 		add_alias(*args.alias)
 
 	aliases = parse_aliases()
+	if args.list:
+		for name, number in sorted(aliases.items()):
+			print(f"{name}\t{number}")
+
+		exit(0)
 
 	if args.recipient and args.message:
 		to = args.recipient.lower()
