@@ -22,13 +22,18 @@ def send_message_to_user(contact, msg):
     return call_applescript(send_to_user)
 
 def parse_aliases():
-	if not os.path.isfile(ALIAS_FILE): 
+	if not os.path.isfile(ALIAS_FILE):
 		with open(ALIAS_FILE, 'w+') as af: pass
-	with open(os.path.join(os.path.dirname(__file__), "aliases.txt"), 'r+') as af:
-		return {
-			alias.split("|")[0].strip(): alias.split("|")[1].strip() 
-			for alias in af.readlines()
-		}
+
+	with open(ALIAS_FILE, 'r+') as af:
+
+		aliases = {}
+		for alias in af.readlines():
+			parts = alias.split(":")
+			name = parts[0].strip()
+			number = parts[1].strip()
+			aliases[name] = number
+		return aliases
 
 def add_alias(name, number):
 	active = parse_aliases()
@@ -37,13 +42,13 @@ def add_alias(name, number):
 
 	with open(ALIAS_FILE, 'w+') as af:
 		for k, v in sorted(active.items()):
-			af.write(f"{k}|{v}\n")
+			af.write(f"{k}\t\t: {v}\n")
 
-	print(f"Added alias: {alias}|{number}!")
+	print(f"Added alias: {alias} | {number}")
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser() 
-	
+	parser = argparse.ArgumentParser()
+
 	parser.add_argument("recipient", nargs="?", help="Alias to send text")
 	parser.add_argument("--alias", nargs=2, metavar=('name', 'number'), help="Alias k-v pair to add")
 	parser.add_argument("--list", action="store_true", help="List all aliases")
@@ -62,14 +67,12 @@ if __name__ == "__main__":
 
 	if args.recipient and args.message:
 		to = args.recipient.lower()
-		if to in aliases:		
+		if to in aliases:
 			resp = send_message_to_user(
 				aliases[to], " ".join(args.message)
 			)
+			if resp['code'] != 0:
+				print(f"Failed to send message, error code: {resp['code']}")
 
-			if resp['code'] != 0: 
-				print("Failed to send message!")
-			else:
-				print("Message sent!")
 		else:
-			print(f"Alias {to} could not be located; try adding one with --alias!")
+			print(f"Alias {to} could not be located; try adding one with --alias")
