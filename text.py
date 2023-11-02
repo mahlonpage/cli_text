@@ -36,7 +36,7 @@ if __name__ == "__main__":
 	parser.add_argument("--alias_group", nargs=2, metavar=('group_name, alias'), help="Adds a person from contacts to aliases. Takes a name, alias pair. Name is used to search contacts and alias is used to text.")
 
 	parser.add_argument("--list", action="store_true", help="List all aliases")
-	parser.add_argument("--update_contacts", nargs="?", help="Updates contacts file by pulling from mac. If true is passed after, delete previous contacts instead of adding to.")
+	parser.add_argument("--update_contacts", action="store_true", help="Updates contacts file by pulling from mac. If true is passed after, delete previous contacts instead of adding to.")
 	parser.add_argument("recipient", nargs="?", help="Alias of person to send text to")
 	parser.add_argument("message", nargs=argparse.REMAINDER, help="Message to send to recipient")
 
@@ -55,10 +55,8 @@ if __name__ == "__main__":
 		exit(0)
 
 	if args.update_contacts:
-		contact_args = args.update_contacts
-		if len(contact_args) == 2 and contact_args[2].strip().lower() == "true":
-			generate_contacts(True)
-		generate_contacts(False)
+		generate_contacts()
+		exit(0)
 
 
 
@@ -81,4 +79,12 @@ if __name__ == "__main__":
 
 
 # TODO:
-# make it so you can't add duplicate aliases. Make a way to delete aliases.
+# make it so you can't add duplicate aliases.
+# Make a way to delete aliases.
+# Get group chat names from most recent texts, filter out individual's names and then store groups
+
+# Make utilities file
+# separate group aliasing and regular aliasing
+
+# Turn aliases and contacts into csvs instead of name : phone
+########## Maybe not, requires adding pandas dependency

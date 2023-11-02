@@ -1,6 +1,6 @@
-from subprocess import Popen, PIPE
 import re
 import os
+from apple_script import run_apple_script
 
 CONTACTS_FILE = os.path.join(os.path.dirname(__file__), "files/contacts.txt")
 
@@ -22,17 +22,11 @@ tell application "Contacts"
     set contactText to contactList as text
     contactText
 end tell
-
 '''
 
 # Generates contacts.txt file by scraping user's contacts
-def generate_contacts(fresh):
-    # Run applescript
-    p = Popen(['osascript'], stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    info, _ = p.communicate(script)
-
-    if fresh:
-        os.remove(CONTACTS_FILE)
+def generate_contacts():
+    info = run_apple_script(script, "Contacts")
 
     # Parse contact list, remove the final empty contact, remove duplicates, and sort
     contacts = info.split("\n")
@@ -54,6 +48,8 @@ def generate_contacts(fresh):
             name = name.strip()
 
             af.write(f"{name} : {number}\n")
+
+    return
 
 # Returns all contacts that match a certain regex
 def search_contacts(search):

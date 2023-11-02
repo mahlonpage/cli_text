@@ -1,5 +1,6 @@
 import os
 from contact_manager import search_contacts
+from utilities import pretty_print_list, get_user_selection
 
 ALIAS_FILE = os.path.join(os.path.dirname(__file__), "files/aliases.txt")
 
@@ -24,6 +25,9 @@ alias -- alias by which to text the phone number associated with the name
 """
 def add_alias(name, alias):
 	alias = alias.lower().strip()
+	if _alias_exists(alias):
+		print(f"Alias: {alias}, already exists")
+		return
 
 	name = name.lower().strip()
 	search_results = search_contacts(name)
@@ -42,6 +46,8 @@ def add_alias(name, alias):
 	with open(ALIAS_FILE, 'a') as af:
 		af.write(f"{alias} : {phone_number}\n")
 
+	_sort_alias_file()
+
 	print(f"Added alias: {alias} : {phone_number}")
 	return
 
@@ -53,18 +59,45 @@ alias -- alias by which to text the group
 """
 def add_group_alias(group_name, alias):
 	alias = alias.lower().strip()
-	alias = "~" + alias
+	alias = "." + alias
+
+	if _alias_exists(alias):
+		print(f"Alias: {alias}, already exists")
+		return
 
 	with open(ALIAS_FILE, 'a') as af:
 		af.write(f"{alias} : {group_name}\n")
+
+	_sort_alias_file()
 
 	print(f"Added alias {alias} : {group_name}")
 	return
 
 """
+Prints all aliases
+"""
+def print_aliases():
+	aliases = _get_alias_list()
+	pretty_print_list(aliases)
+	return
+
+"""
+Returns a bool representing if an alias already exists
+"""
+def _alias_exists(alias):
+	aliases = _get_alias_list()
+	keys = set()
+	for alias in aliases:
+		key = alias.split(":")[0]
+		key.lower().strip()
+		keys.add(key)
+
+	return alias in keys
+
+"""
 Gets all aliases as a list
 """
-def get_alias_list():
+def _get_alias_list():
     if not os.path.isfile(ALIAS_FILE):
         with open(ALIAS_FILE, 'w+'):
             pass
@@ -75,36 +108,14 @@ def get_alias_list():
             line = line.strip()
             aliases.append((line))
 
-    pretty_print_list(aliases)
-    return
+    return aliases
 
 """
-Prints all aliases
+Sorts the alias file.
 """
-def print_aliases():
-	aliases = get_alias_list()
-	pretty_print_list(aliases)
-	return
-
-"""
-Pretty printing helper function
-"""
-def pretty_print_list(list):
-	for i, item in enumerate(list):
-		print(f"{i+1}. {item}")
-
-"""
-Queries the user to get which search contact they were looking for of the found aliases
-options -- list of options to choose from
-"""
-def get_user_selection(options):
-	while True:
-		pretty_print_list(options)
-		user_choice = input("Which user would you like to select? (enter a 1-indexed number): ")
-		if user_choice.isdigit():
-			user_choice = int(user_choice)
-			if 1 <= user_choice <= len(options):
-				break
-		print("Enter a valid 1-indexed number")
-
-	return user_choice
+def _sort_alias_file():
+	aliases = _get_alias_list()
+	aliases.sort()
+	with open (ALIAS_FILE, 'w+') as af:
+		for alias in aliases:
+			af.write(f"{alias}\n")
