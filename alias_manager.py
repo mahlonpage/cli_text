@@ -74,6 +74,24 @@ def add_group_alias(group_name, alias):
 	return
 
 """
+Deletes a given alias
+alias -- alias to delete
+"""
+def delete_alias(alias):
+	if not _alias_exists(alias):
+		print (f"Alias {alias} does not exist.")
+		return
+
+	lines = _get_alias_list()
+	with open(ALIAS_FILE, 'w+') as af:
+		for line in lines:
+			curr_alias, _ = line.split(":")
+			curr_alias = curr_alias.strip().lower()
+			if alias != curr_alias:
+				af.write(f"{line}\n")
+	return
+
+"""
 Prints all aliases
 """
 def print_aliases():
@@ -85,14 +103,13 @@ def print_aliases():
 Returns a bool representing if an alias already exists
 """
 def _alias_exists(alias):
-	aliases = _get_alias_list()
-	keys = set()
-	for alias in aliases:
-		key = alias.split(":")[0]
-		key.lower().strip()
-		keys.add(key)
+	lines = _get_alias_list()
+	for line in lines:
+		key = line.split(":")[0]
+		key = key.lower().strip()
+		if key == alias: return True
 
-	return alias in keys
+	return False
 
 """
 Gets all aliases as a list

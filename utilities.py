@@ -19,4 +19,5 @@ def get_user_selection(options):
 				break
 		print("Enter a valid 1-indexed number")
 
-	return user_choice
+	# Returns a 0-indexed value
+	return user_choice - 1
