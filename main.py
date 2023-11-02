@@ -1,8 +1,8 @@
 import argparse
 from alias_manager import add_alias, add_group_alias, delete_alias, print_aliases, get_send_target
 from contact_manager import generate_contacts
-from sender import *
-from utilities import natural_number
+from message_sender import send_messages
+from utilities import natural_number, split_string
 
 
 if __name__ == "__main__":
@@ -62,16 +62,10 @@ if __name__ == "__main__":
 
 	repeat_count = args.r[0] if args.r else 1
 
-	# Send a group message
-	if args.recipient[0] == ".":
-		if repeat_count > 1:
-			send_repeat_group_message(send_target, message, repeat_count)
-		else:
-			send_group_message(send_target, message)
-
-	# Send an individual message
+	if args.s:
+		messages = split_string(message, args.s[0])
 	else:
-		if repeat_count > 1:
-			send_repeat_user_message(send_target, message, repeat_count)
-		else:
-			send_user_message(send_target, message)
+		messages = [message]
+
+	send_messages(messages, [send_target], repeat_count)
+

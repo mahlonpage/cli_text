@@ -1,6 +1,6 @@
 import re
 import os
-from apple_script import run_apple_script
+from apple_script import run_applescript_open_close
 
 CONTACTS_FILE = os.path.join(os.path.dirname(__file__), "files/contacts.txt")
 
@@ -26,7 +26,7 @@ end tell
 
 # Generates contacts.txt file by scraping user's contacts
 def generate_contacts():
-    info = run_apple_script(script, "Contacts")
+    info = run_applescript_open_close(script, "Contacts")
 
     # Parse contact list, remove the final empty contact, remove duplicates, and sort
     contacts = info.split("\n")

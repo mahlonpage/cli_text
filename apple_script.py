@@ -1,43 +1,24 @@
 from subprocess import Popen, PIPE
 
 """
-Runs an apple script, opening the necessary applications and returning
-them to their initial opened/closed state
-script -- apple script to run
-application -- application used by this script
+Runs an apple script an handles opening and closing of application
+script -- applescript to run
+application -- application to open/close if necessary.
 """
-def run_apple_script(script, application):
-    opened = _open_application(application)
+def run_applescript_open_close(script, application):
+     opened = open_application(application)
 
-    info = _applescript_runner(script)
+     info = run_applescript(script)
 
-    if opened: _close_application(application)
+     if opened: close_application(application)
 
-    return info
-
-"""
-Runs a batch of apple scripts. Optimizes open/closing of applications
-versus repeat calls to run_apple_script
-scripts - list of apple scripts to run
-application -- application used by the scripts
-"""
-def run_apple_script_batch(scripts, application):
-    opened = _open_application(application)
-
-    infos = []
-    for script in scripts:
-        info = _applescript_runner(script)
-        infos.append(info)
-
-    if opened: _close_application(application)
-
-    return info
+     return info
 
 """
 Runs applescripts and handles errors
 script -- apple script to run
 """
-def _applescript_runner(script):
+def run_applescript(script):
     p = Popen(['osascript'], stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     info, err = p.communicate(script)
     if err:
@@ -49,7 +30,7 @@ def _applescript_runner(script):
 Opens a given application on the device and returns a bool denoting if it was already open or not.
 application -- the application to open.
 """
-def _open_application(application):
+def open_application(application):
     open_script = f"""
     tell application "System Events"
         if not (exists process "{application}") then
@@ -61,7 +42,7 @@ def _open_application(application):
         end if
     end tell
     """
-    result = _applescript_runner(open_script)
+    result = run_applescript(open_script)
     result = result.strip()
 
     if result == "opened": return True
@@ -71,10 +52,30 @@ def _open_application(application):
 Closes a given application on the device
 application -- application to close.
 """
-def _close_application(application):
+def close_application(application):
     close_script = f"""
     tell application "{application}" to quit
     """
 
-    _applescript_runner(close_script)
+    run_applescript(close_script)
     return
+
+def send_user_message(contact, msg):
+	send_user_script = f"""
+		tell application "Messages"
+			set targetService to 1st account whose service type = iMessage
+			set targetCell to participant "{contact}" of targetService
+			send "{msg}" to targetCell
+		end tell
+	"""
+
+	return run_applescript(send_user_script)
+
+def send_group_message(chat_name, msg):
+	send_group_script = f"""
+        tell application "Messages"
+	        send "{msg}" to chat "{chat_name}"
+        end tell
+    """
+
+	return run_applescript(send_group_script)

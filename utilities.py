@@ -28,6 +28,10 @@ string -- the string to split
 pieces -- number of pieces to split into
 """
 def split_string(string, pieces):
+	if pieces > len(string):
+		print("Error: Number of pieces longer than length of string")
+		exit(1)
+
 	string_len = len(string)
 
 	smaller_piece_size = string_len % pieces
