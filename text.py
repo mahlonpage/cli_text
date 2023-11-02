@@ -1,13 +1,7 @@
 import argparse
-from subprocess import Popen, PIPE
-
 from alias_manager import add_alias, add_group_alias, print_aliases, get_send_goal
+from apple_script import run_apple_script
 from contact_manager import generate_contacts
-
-def call_applescript(script):
-	p = Popen(['osascript'], stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-	stdout, stderr = p.communicate(script)
-	return {"output": stdout, "error": stderr, "code": p.returncode}
 
 def send_message_to_user(contact, msg):
 	send_to_user_script = f"""
@@ -18,7 +12,7 @@ def send_message_to_user(contact, msg):
 		end tell
 	"""
 
-	return call_applescript(send_to_user_script)
+	return run_apple_script(send_to_user_script, "Messages")
 
 def send_message_to_group(chat_name, msg):
 	send_to_group_script = f"""
@@ -27,7 +21,7 @@ def send_message_to_group(chat_name, msg):
         end tell
     """
 
-	return call_applescript(send_to_group_script)
+	return run_apple_script(send_to_group_script, "Messages")
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -58,21 +52,15 @@ if __name__ == "__main__":
 		generate_contacts()
 		exit(0)
 
-
-
 	if args.recipient and args.message:
 		send_goal = get_send_goal(args.recipient)
 
 		if send_goal:
 			# Either send to group ot send to individual user
 			if args.recipient[0] == ".":
-				resp = send_message_to_group(send_goal, " ".join(args.message))
+				send_message_to_group(send_goal, " ".join(args.message))
 			else:
-				resp = send_message_to_user(send_goal, " ".join(args.message))
-
-			# Error case
-			if resp['code'] != 0:
-				print(f"Failed to send message, error code: {resp['code']}")
+				send_message_to_user(send_goal, " ".join(args.message))
 
 		else:
 			print(f"Alias {args.recipient} could not be found. Run --alias to add an alias. Group aliases start with .")
