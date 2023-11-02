@@ -9,6 +9,10 @@ repeat_count -- number of times to send messages.
 def send_messages(messages, contacts, repeat_count):
     open_status = open_application("Messages")
 
+    if len(messages) * repeat_count > 5:
+        print("No more than 5 messages while in testing phase")
+        exit(1)
+
     for contact in contacts:
         for message in messages:
             for _ in range(repeat_count):
