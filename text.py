@@ -65,7 +65,7 @@ if __name__ == "__main__":
 		send_goal = get_send_goal(args.recipient)
 
 		if send_goal:
-			# Either send to group ot send to individual user
+			# Either send to group or send to individual user
 			if args.recipient[0] == ".":
 				send_message_to_group(send_goal, " ".join(args.message))
 			else:
@@ -73,9 +73,3 @@ if __name__ == "__main__":
 
 		else:
 			print(f"Alias {args.recipient} could not be found. Run --alias to add an alias. Group aliases start with .")
-
-
-# TODO:
-# Get group chat names from most recent texts, filter out individual's names and then store groups
-
-# separate group aliasing and regular aliasing
