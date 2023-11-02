@@ -76,7 +76,6 @@ if __name__ == "__main__":
 
 
 # TODO:
-# Make a way to delete aliases.
 # Get group chat names from most recent texts, filter out individual's names and then store groups
 
 # separate group aliasing and regular aliasing

@@ -60,5 +60,3 @@ def _close_application(application):
 
     _applescript_runner(close_script)
     return
-
-
