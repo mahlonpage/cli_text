@@ -48,7 +48,7 @@ def add_alias(name, alias):
 
 	_sort_alias_file()
 
-	print(f"Added alias: {alias} : {phone_number}")
+	print(f"Added alias for {choice[0]}: {alias} : {phone_number}")
 	return
 
 """
