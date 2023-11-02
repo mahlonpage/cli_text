@@ -9,6 +9,7 @@ Finds the group chat name / phone number of the recipient our alias is looking f
 search_term -- Alias to look for in our files
 """
 def get_send_target(search_term):
+	print(search_term)
 	search_term = search_term.lower().strip()
 	with open(ALIAS_FILE, 'r+') as af:
 		for line in af:
