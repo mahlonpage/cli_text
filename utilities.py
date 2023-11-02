@@ -21,6 +21,28 @@ def get_user_selection(options):
 
 	# Returns a 0-indexed value
 	return user_choice - 1
+"""
+Convenient math function that splits a string as evenly as
+possible weighted extra characters toward later pieces
+string -- the string to split
+pieces -- number of pieces to split into
+"""
+def split_string(string, pieces):
+	string_len = len(string)
+
+	smaller_piece_size = string_len % pieces
+	larger_piece_size = string_len // pieces
+
+	res = []
+	for i in range(pieces - smaller_piece_size):
+		res.append(string[i * larger_piece_size: (i + 1) * larger_piece_size])
+
+	for i in range(smaller_piece_size):
+		start = (pieces - smaller_piece_size) * larger_piece_size + i * (larger_piece_size + 1)
+		end = (pieces - smaller_piece_size) * larger_piece_size + (i + 1) * (larger_piece_size + 1)
+		res.append(string[start:end])
+
+	return res
 
 # Natural number definition for argparse types
 def natural_number(i):

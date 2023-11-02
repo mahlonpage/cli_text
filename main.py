@@ -1,28 +1,9 @@
 import argparse
 from alias_manager import add_alias, add_group_alias, delete_alias, print_aliases, get_send_target
-from apple_script import run_apple_script
 from contact_manager import generate_contacts
+from sender import *
 from utilities import natural_number
 
-def send_message_to_user(contact, msg):
-	send_to_user_script = f"""
-		tell application "Messages"
-			set targetService to 1st account whose service type = iMessage
-			set targetCell to participant "{contact}" of targetService
-			send "{msg}" to targetCell
-		end tell
-	"""
-
-	return run_apple_script(send_to_user_script, "Messages")
-
-def send_message_to_group(chat_name, msg):
-	send_to_group_script = f"""
-        tell application "Messages"
-	        send "{msg}" to chat "{chat_name}"
-        end tell
-    """
-
-	return run_apple_script(send_to_group_script, "Messages")
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -38,6 +19,9 @@ if __name__ == "__main__":
 
 	# Repeat
 	parser.add_argument("-r", nargs=1, metavar="repeat_count", type=natural_number, help="Sends as many times as specified")
+
+	# Split
+	parser.add_argument("-s", nargs=1, metavar="number_of_pieces", type=natural_number, help="Splits the string to send into multiple separate texts of equal size")
 
 	# Texting arguments
 	parser.add_argument("recipient", nargs="?", help="Alias of person to send text to")
@@ -65,21 +49,29 @@ if __name__ == "__main__":
 		generate_contacts()
 		exit(0)
 
-	if args.recipient and args.message:
-		repeat_count = 1
-		if args.r: repeat_count = args.r[0]
+	# If no recipient or message, exit. Everything past here is send messages related
+	if not args.recipient or not args.message:
+		exit(0)
 
-		message = " ".join(args.message)
-		for _ in range(repeat_count):
-			send_target = get_send_target(args.recipient)
+	message = " ".join(args.message)
+	send_target = get_send_target(args.recipient)
 
-			if send_target:
-				# Either send to group or send to individual user
-				if args.recipient[0] == ".":
-					send_message_to_group(send_target, message)
-				else:
-					send_message_to_user(send_target, message)
+	if not send_target:
+		print(f"Alias {args.recipient} could not be found. Run --alias to add an alias. Group aliases start with .")
+		exit(1)
 
-			else:
-				print(f"Alias {args.recipient} could not be found. Run --alias to add an alias. Group aliases start with .")
-				exit(1)
+	repeat_count = args.r[0] if args.r else 1
+
+	# Send a group message
+	if args.recipient[0] == ".":
+		if repeat_count > 1:
+			send_repeat_group_message(send_target, message, repeat_count)
+		else:
+			send_group_message(send_target, message)
+
+	# Send an individual message
+	else:
+		if repeat_count > 1:
+			send_repeat_user_message(send_target, message, repeat_count)
+		else:
+			send_user_message(send_target, message)
