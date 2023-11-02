@@ -1,7 +1,8 @@
 import argparse
-from alias_manager import add_alias, add_group_alias, delete_alias, print_aliases, get_send_goal
+from alias_manager import add_alias, add_group_alias, delete_alias, print_aliases, get_send_target
 from apple_script import run_apple_script
 from contact_manager import generate_contacts
+from utilities import natural_number
 
 def send_message_to_user(contact, msg):
 	send_to_user_script = f"""
@@ -35,6 +36,9 @@ if __name__ == "__main__":
 	# Contacts arguments
 	parser.add_argument("--update_contacts", action="store_true", help="Updates contacts file by pulling from mac. If true is passed after, delete previous contacts instead of adding to.")
 
+	# Repeat
+	parser.add_argument("-r", nargs=1, metavar="repeat_count", type=natural_number, help="Sends as many times as specified")
+
 	# Texting arguments
 	parser.add_argument("recipient", nargs="?", help="Alias of person to send text to")
 	parser.add_argument("message", nargs=argparse.REMAINDER, help="Message to send to recipient")
@@ -62,14 +66,20 @@ if __name__ == "__main__":
 		exit(0)
 
 	if args.recipient and args.message:
-		send_goal = get_send_goal(args.recipient)
+		repeat_count = 1
+		if args.r: repeat_count = args.r[0]
 
-		if send_goal:
-			# Either send to group or send to individual user
-			if args.recipient[0] == ".":
-				send_message_to_group(send_goal, " ".join(args.message))
+		message = " ".join(args.message)
+		for _ in range(repeat_count):
+			send_target = get_send_target(args.recipient)
+
+			if send_target:
+				# Either send to group or send to individual user
+				if args.recipient[0] == ".":
+					send_message_to_group(send_target, message)
+				else:
+					send_message_to_user(send_target, message)
+
 			else:
-				send_message_to_user(send_goal, " ".join(args.message))
-
-		else:
-			print(f"Alias {args.recipient} could not be found. Run --alias to add an alias. Group aliases start with .")
+				print(f"Alias {args.recipient} could not be found. Run --alias to add an alias. Group aliases start with .")
+				exit(1)

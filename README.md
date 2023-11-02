@@ -12,3 +12,5 @@ Silly tool to send a quick text from CLI!
     - Handle storing messages and time to send
     - Make a constantly running background process
     - Have this process run at startup, could be in zsh startup
+- Repeat send needs better work
+    - Handle opening/closing application correct times, don't open and close 5 times for repeat 5.s

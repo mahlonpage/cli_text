@@ -5,10 +5,12 @@ Runs an apple script, opening the necessary applications and returning
 them to their initial opened/closed state
 script -- apple script to run
 application -- application used by this script
+close -- if the application needs to be opened, should we close it afterward?
 """
 def run_apple_script(script, application):
     opened = _open_application(application)
 
+    print("enter normal script")
     info = _applescript_runner(script)
 
     if opened: _close_application(application)
@@ -32,6 +34,7 @@ Opens a given application on the device and returns a bool denoting if it was al
 application -- the application to open.
 """
 def _open_application(application):
+    print("enter open app")
     open_script = f"""
     tell application "System Events"
         if not (exists process "{application}") then
@@ -54,8 +57,9 @@ Closes a given application on the device
 application -- application to close.
 """
 def _close_application(application):
+    print("enter close app")
     close_script = f"""
-    tell application {application} to quit
+    tell application "{application}" to quit
     """
 
     _applescript_runner(close_script)

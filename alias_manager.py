@@ -8,14 +8,14 @@ ALIAS_FILE = os.path.join(os.path.dirname(__file__), "files/aliases.txt")
 Finds the group chat name / phone number of the recipient our alias is looking for
 search_term -- Alias to look for in our files
 """
-def get_send_goal(search_term):
+def get_send_target(search_term):
 	search_term = search_term.lower().strip()
 	with open(ALIAS_FILE, 'r+') as af:
 		for line in af:
-			alias, send_goal = line.split(":")
-			alias, send_goal = alias.strip(), send_goal.strip()
+			alias, send_target = line.split(":")
+			alias, send_target = alias.strip(), send_target.strip()
 			if alias == search_term:
-				return send_goal
+				return send_target
 	print("No alias found")
 
 """

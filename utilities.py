@@ -21,3 +21,11 @@ def get_user_selection(options):
 
 	# Returns a 0-indexed value
 	return user_choice - 1
+
+# Natural number definition for argparse types
+def natural_number(i):
+	value = int(i)
+	if value < 1:
+		print(f"{value} is not a natural number, must be a natural number >= 1")
+		exit(1)
+	return value
