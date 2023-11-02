@@ -83,8 +83,4 @@ if __name__ == "__main__":
 # Make a way to delete aliases.
 # Get group chat names from most recent texts, filter out individual's names and then store groups
 
-# Make utilities file
 # separate group aliasing and regular aliasing
-
-# Turn aliases and contacts into csvs instead of name : phone
-########## Maybe not, requires adding pandas dependency
