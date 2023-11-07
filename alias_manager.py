@@ -75,10 +75,10 @@ def add_group_alias(group_name, alias):
 	return
 
 """
-Deletes a given alias
-alias -- alias to delete
+Removes a given alias
+alias -- alias to remove
 """
-def delete_alias(alias):
+def remove_alias(alias):
 	if not _alias_exists(alias):
 		print (f"Alias {alias} does not exist.")
 		return

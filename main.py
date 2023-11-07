@@ -1,5 +1,5 @@
 import argparse
-from alias_manager import add_alias, add_group_alias, delete_alias, print_aliases, get_send_target
+from alias_manager import add_alias, add_group_alias, remove_alias, print_aliases, get_send_target
 from contact_manager import generate_contacts
 from message_sender import send_messages
 from utilities import natural_number, split_string
@@ -11,7 +11,7 @@ if __name__ == "__main__":
 	# Alias arguments
 	parser.add_argument("--alias", nargs=2, metavar=('name, alias'), help="Adds a person from contacts to aliases. Takes a name, alias pair. Name is used to search contacts and alias is used to text.")
 	parser.add_argument("--alias_group", nargs=2, metavar=('group_name, alias'), help="Adds a person from contacts to aliases. Takes a name, alias pair. Name is used to search contacts and alias is used to text.")
-	parser.add_argument("--delete_alias", nargs=1, help="Deletes an alias")
+	parser.add_argument("--remove_alias", nargs=1, help="Removes an alias")
 	parser.add_argument("--list", action="store_true", help="List all aliases")
 
 	# Contacts arguments
@@ -37,8 +37,8 @@ if __name__ == "__main__":
 		add_group_alias(*args.alias_group)
 		exit(0)
 
-	if args.delete_alias:
-		delete_alias(*args.delete_alias)
+	if args.remove_alias:
+		remove_alias(*args.remove_alias)
 		exit(0)
 
 	if args.list:
